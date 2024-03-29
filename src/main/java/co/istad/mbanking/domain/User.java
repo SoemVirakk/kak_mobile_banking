@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class User {
     @Column(nullable = false)
     private Integer pin;  // Store 4-digit
 
+    @Column(unique = true, nullable = false, length = 30)
+    private String phoneNumber;
+
     @Column(nullable = false)
     private String password;
 
@@ -40,8 +44,7 @@ public class User {
     @Column(length = 8)
     private String gender;
 
-    @Column(unique = true, nullable = false, length = 30)
-    private String phoneNumber;
+    private LocalDate dob;
 
     @Column(length = 100)
     private String cityOrProvince;
@@ -81,7 +84,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserAccount> userAccountList;
 
-    @ManyToMany
+    @ManyToMany()
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
     private Boolean isDeleted; // manage delete status (admin want to disable or remove an account)
