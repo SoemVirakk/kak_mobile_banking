@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        if (userRepository.existsByStudentIdCard(userCreateRequest.nationalCardId())) {
+        if (userRepository.existsByStudentIdCard(userCreateRequest.studentIdCard())) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Student card ID has already been existed!"
@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserService {
         // DTO pattern (mapstruct ft. lombok)
         User user = userMapper.fromUserCreateRequest(userCreateRequest);
         user.setUuid(UUID.randomUUID().toString());
-
         user.setProfileImage("avatar.png");
         user.setCreatedAt(LocalDateTime.now());
         user.setIsBlocked(false);
@@ -70,12 +69,6 @@ public class UserServiceImpl implements UserService {
                                 new ResponseStatusException(HttpStatus.NOT_FOUND,
                                         "Role USER has not been found!"));
         roles.add(userRole);
-
-        Role subscriber = new Role();
-        subscriber.setId(5);
-        subscriber.setName("SUBSCRIBER");
-        roles.add(subscriber);
-
         user.setRoles(roles);
 
         userRepository.save(user);
