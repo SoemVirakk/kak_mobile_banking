@@ -2,8 +2,12 @@ package co.istad.mbanking.features.user;
 
 import co.istad.mbanking.base.BasedMessage;
 import co.istad.mbanking.features.user.dto.UserCreateRequest;
+import co.istad.mbanking.features.user.dto.UserDetailsResponse;
 import co.istad.mbanking.features.user.dto.UserResponse;
 import co.istad.mbanking.features.user.dto.UserUpdateRequest;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -11,7 +15,11 @@ public interface UserService {
 
     UserResponse updateByUuid(String uuid, UserUpdateRequest userUpdateRequest);
 
-    UserResponse findByUuid(String uuid);
+    Page<UserResponse> findList(int page, int limit);
+
+    UserDetailsResponse findByUuid(String uuid);
 
     BasedMessage blockByUuid(String uuid);
+
+    void deleteByUuid(String uuid);
 }

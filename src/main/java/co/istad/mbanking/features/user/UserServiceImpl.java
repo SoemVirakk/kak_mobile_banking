@@ -4,11 +4,15 @@ import co.istad.mbanking.base.BasedMessage;
 import co.istad.mbanking.domain.Role;
 import co.istad.mbanking.domain.User;
 import co.istad.mbanking.features.user.dto.UserCreateRequest;
+import co.istad.mbanking.features.user.dto.UserDetailsResponse;
 import co.istad.mbanking.features.user.dto.UserResponse;
 import co.istad.mbanking.features.user.dto.UserUpdateRequest;
 import co.istad.mbanking.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -110,14 +115,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse findByUuid(String uuid) {
+    public Page<UserResponse> findList(int page, int limit) {
+        // Create pageRequest object
+        PageRequest pageRequest = PageRequest.of(page, limit);
+        // Invoke findAll(pageRequest)
+        Page<User> users = userRepository.findAll(pageRequest);
+        // Map result of pagination to response
+        return users.map(userMapper::toUserResponse);
+    }
+
+    @Override
+    public UserDetailsResponse findByUuid(String uuid) {
 
         User user = userRepository.findByUuid(uuid)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 "User has not been found!"));
 
-        return userMapper.toUserResponse(user);
+        return userMapper.toUserDetailsResponse(user);
     }
 
     @Transactional
@@ -132,5 +147,14 @@ public class UserServiceImpl implements UserService {
         userRepository.blockByUuid(uuid);
 
         return new BasedMessage("User has been blocked");
+    }
+
+    @Override
+    public void deleteByUuid(String uuid) {
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "User has not been found!"));
+        userRepository.delete(user);
     }
 }
