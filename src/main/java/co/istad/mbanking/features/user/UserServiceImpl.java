@@ -1,12 +1,17 @@
 package co.istad.mbanking.features.user;
 
+import co.istad.mbanking.base.BasedMessage;
 import co.istad.mbanking.domain.Role;
 import co.istad.mbanking.domain.User;
 import co.istad.mbanking.features.user.dto.UserCreateRequest;
+import co.istad.mbanking.features.user.dto.UserResponse;
+import co.istad.mbanking.features.user.dto.UserUpdateRequest;
 import co.istad.mbanking.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -16,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -68,9 +74,63 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() ->
                                 new ResponseStatusException(HttpStatus.NOT_FOUND,
                                         "Role USER has not been found!"));
+
+        // Create dynamic role from client
+        userCreateRequest.roles().forEach(r -> {
+            Role newRole = roleRepository.findByName(r.name())
+                    .orElseThrow(() ->
+                            new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                    "Role USER has not been found!"));
+            roles.add(newRole);
+        });
+
         roles.add(userRole);
         user.setRoles(roles);
 
         userRepository.save(user);
+    }
+
+    @Override
+    public UserResponse updateByUuid(String uuid, UserUpdateRequest userUpdateRequest) {
+
+        // check uuid if exists
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "User has not been found!"));
+
+        log.info("before user: {}", user);
+
+        userMapper.fromUserUpdateRequest(userUpdateRequest, user);
+
+
+        user = userRepository.save(user);
+
+        return userMapper.toUserResponse(user);
+    }
+
+    @Override
+    public UserResponse findByUuid(String uuid) {
+
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "User has not been found!"));
+
+        return userMapper.toUserResponse(user);
+    }
+
+    @Transactional
+    @Override
+    public BasedMessage blockByUuid(String uuid) {
+
+        if (!userRepository.existsByUuid(uuid)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User has not been found!");
+        }
+
+        userRepository.blockByUuid(uuid);
+
+        return new BasedMessage("User has been blocked");
     }
 }
