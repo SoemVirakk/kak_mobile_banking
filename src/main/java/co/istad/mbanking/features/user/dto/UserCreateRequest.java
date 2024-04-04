@@ -6,23 +6,23 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record UserCreateRequest(
-        @NotNull
-        @Max(9999)
-        @Positive
+        @NotNull(message = "Pin is required")
+        @Max(value = 9999, message = "Pin must be 4 digits")
+        @Positive(message = "Pin must be a positive number")
         Integer pin,
 
-        @NotBlank
-        @Size(max = 20)
+        @NotBlank(message = "Phone number is required")
+        @Size(max = 20, message = "Phone number must less than 20 characters")
         String phoneNumber,
 
-        @NotBlank
+        @NotBlank(message = "Password is required")
         String password,
 
-        @NotBlank
+        @NotBlank(message = "Confirmed password is required")
         String confirmedPassword,
 
-        @NotBlank
-        @Size(max = 40)
+        @NotBlank(message = "Name is required")
+        @Size(max = 40, message = "Name must be less than 40 characters")
         String name,
 
         @NotBlank

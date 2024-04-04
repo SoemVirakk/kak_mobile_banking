@@ -22,4 +22,7 @@ public interface UserService {
     BasedMessage blockByUuid(String uuid);
 
     void deleteByUuid(String uuid);
+
+    String updateProfileImage(String uuid, String mediaName);
+
 }

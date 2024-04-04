@@ -133,8 +133,17 @@ public class MediaServiceImpl implements MediaService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     String.format("Media path %s cannot be deleted!", e.getLocalizedMessage()));
         }
-
-
     }
 
+    @Override
+    public Resource downloadMediaByName(String mediaName, String folderName) {
+        // Create absolute path of media
+        Path path = Paths.get(serverPath + folderName + "\\" + mediaName);
+        try {
+            return new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Media has not been found!");
+        }
+    }
 }

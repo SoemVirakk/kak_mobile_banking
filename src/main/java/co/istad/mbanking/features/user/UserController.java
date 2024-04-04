@@ -1,10 +1,8 @@
 package co.istad.mbanking.features.user;
 
 import co.istad.mbanking.base.BasedMessage;
-import co.istad.mbanking.features.user.dto.UserCreateRequest;
-import co.istad.mbanking.features.user.dto.UserDetailsResponse;
-import co.istad.mbanking.features.user.dto.UserResponse;
-import co.istad.mbanking.features.user.dto.UserUpdateRequest;
+import co.istad.mbanking.base.BasedResponse;
+import co.istad.mbanking.features.user.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -59,5 +57,17 @@ public class UserController {
     // Disable user by UUID (soft delete) /{uuid}/disable
 
     // Enable user by UUID /{uuid}/enable
+
+    // Update user profile image
+    @PutMapping("/{uuid}/profile-image")
+    BasedResponse<?> updateProfileImage(@PathVariable String uuid,
+                                    @Valid @RequestBody UserProfileImageRequest userProfileImageRequest) {
+
+        String newProfileImageUri = userService.updateProfileImage(uuid, userProfileImageRequest.mediaName());
+
+        return BasedResponse.builder()
+                .payload(newProfileImageUri)
+                .build();
+    }
 
 }
