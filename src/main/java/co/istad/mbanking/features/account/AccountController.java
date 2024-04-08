@@ -20,9 +20,9 @@ public class AccountController {
         accountService.createNew(accountCreateRequest);
     }
 
-    @GetMapping("{actNo}")
+    @GetMapping("/{actNo}")
     AccountResponse findByActNo(@PathVariable String actNo) {
-        return null;
+        return accountService.findByActNo(actNo);
     }
 
 

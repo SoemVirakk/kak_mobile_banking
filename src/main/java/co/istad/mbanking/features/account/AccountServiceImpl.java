@@ -5,6 +5,7 @@ import co.istad.mbanking.domain.AccountType;
 import co.istad.mbanking.domain.User;
 import co.istad.mbanking.domain.UserAccount;
 import co.istad.mbanking.features.account.dto.AccountCreateRequest;
+import co.istad.mbanking.features.account.dto.AccountResponse;
 import co.istad.mbanking.features.accounttype.AccountTypeRepository;
 import co.istad.mbanking.features.user.UserRepository;
 import co.istad.mbanking.features.user.dto.UserCreateRequest;
@@ -60,6 +61,18 @@ public class AccountServiceImpl implements AccountService {
         userAccount.setCreatedAt(LocalDateTime.now());
 
         userAccountRepository.save(userAccount);
+    }
+
+    @Override
+    public AccountResponse findByActNo(String actNo) {
+
+        Account account = accountRepository.findByActNo(actNo)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Account no is invalid!"
+                ));
+
+        return accountMapper.toAccountResponse(account);
     }
 
 }

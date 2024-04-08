@@ -1,14 +1,12 @@
 package co.istad.mbanking.mapper;
 
 import co.istad.mbanking.domain.User;
+import co.istad.mbanking.domain.UserAccount;
 import co.istad.mbanking.features.user.dto.UserCreateRequest;
 import co.istad.mbanking.features.user.dto.UserDetailsResponse;
 import co.istad.mbanking.features.user.dto.UserResponse;
 import co.istad.mbanking.features.user.dto.UserUpdateRequest;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -29,4 +27,11 @@ public interface UserMapper {
     UserResponse toUserResponse(User user);
 
     List<UserResponse> toUserResponseList(List<User> users);
+
+    @Named("mapUserResponse")
+    default UserResponse mapUserResponse(List<UserAccount> userAccountList) {
+        // YOUR LOGIC OF MAPPING HERE...
+        return toUserResponse(userAccountList.get(0).getUser());
+    }
+
 }
