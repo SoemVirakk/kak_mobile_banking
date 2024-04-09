@@ -22,7 +22,8 @@ public class ServiceException {
         BasedErrorResponse basedErrorResponse = new BasedErrorResponse();
         basedErrorResponse.setError(basedError);
 
-        return ResponseEntity.ok(basedErrorResponse);
+        return ResponseEntity.status(ex.getStatusCode())
+                .body(basedErrorResponse);
     }
 
 }

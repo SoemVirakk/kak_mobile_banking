@@ -35,7 +35,7 @@ public class Transaction {
     @Column(nullable = false, length = 30)
     private String transactionType; // transfer and payment
 
-    private Boolean status; // Pending, Completed, Failed
+    private Boolean status; // Completed (TRUE), Failed (FALSE), Pending
 
     private LocalDateTime transactionAt;
 

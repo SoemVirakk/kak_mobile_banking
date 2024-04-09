@@ -46,5 +46,4 @@ public class AccountController {
         return accountService.findByActNo(actNo);
     }
 
-
 }
